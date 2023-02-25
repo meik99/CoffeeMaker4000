@@ -1,0 +1,24 @@
+steps:
+  - name: golang:1.18
+    entrypoint: /bin/bash
+    args:
+      - -c
+      - 2>&1 go test -timeout 1m -v ./...
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:
+      - 'gcloud'
+      - 'functions'
+      - 'deploy'
+      - 'coffee'
+      - '--trigger-http'
+      - '--runtime=go118'
+      - '--entry-point=Coffee'
+      - '--region=europe-west3'
+      - '--project=apps-353612 '
+      - '--source=CoffeeFunction/.'
+      - '--allow-unauthenticated'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  dynamic_substitutions: true
