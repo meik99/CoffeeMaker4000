@@ -1,9 +1,7 @@
 #ifndef BLUETOOTH_SERVICE_H
 #define BLUETOOTH_SERVICE_H
 
-#include <BLEDevice.h>
-#include <BLEUtils.h>
-#include <BLEServer.h>
+#include <NimBLEDevice.h>
 
 #include "credentials.h"
 
@@ -56,7 +54,7 @@ private:
     coffeeService = server->createService(COFFEE_SERVICE_UUID);
     coffeeRunCharacteristic = coffeeService->createCharacteristic(
       COFFEE_CHARACTERISTIC_UUID,
-      BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE);
+      NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE);
 
     coffeeRunCharacteristic->setValue(COFFEE_IDLE);
     coffeeService->start();
@@ -66,13 +64,13 @@ private:
     wifiService = server->createService(WIFI_SERVICE_UUID);
     wifiSsidCharacteristic = wifiService->createCharacteristic(
       WIFI_SSID_UUID,
-      BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE);
+      NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE);
     wifiPasswordCharacteristic = wifiService->createCharacteristic(
       WIFI_PASSWORD_UUID,
-      BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE);
+      NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE);
     wifiCommandCharacteristic = wifiService->createCharacteristic(
       WIFI_COMMAND_UUID,
-      BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE);
+      NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE);
 
     #ifdef WIFI_SSID
     wifiSsidCharacteristic->setValue(WIFI_SSID);
@@ -89,7 +87,6 @@ private:
 
 public:
   void init() {
-    BLEDevice::setMTU(517);
     BLEDevice::init(DEVICE_NAME);
     server = BLEDevice::createServer();
 
@@ -97,6 +94,14 @@ public:
     setupWifiService();
 
     startAdvertising();
+  }
+
+  void pause() {
+    BLEDevice::stopAdvertising();
+  }
+
+  void resume() {
+    BLEDevice::startAdvertising();
   }
 
   void setCoffeeRun() {

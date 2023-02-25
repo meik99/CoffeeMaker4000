@@ -1,33 +1,14 @@
-#include <Arduino.h>
+#define _DISABLE_TLS_
+
 #include <WiFi.h>
-#include <HTTPClient.h>
 #include <WiFiClientSecure.h>
+#include <HTTPClient.h>
 #include <base64.h>
 
 #include "bluetooth.h"
+#include "credentials.h"
 
 BluetoothService service;
-
-// Not sure if WiFiClientSecure checks the validity date of the certificate.
-// Setting clock just to be sure...
-void setClock() {
-  configTime(0, 0, "pool.ntp.org");
-
-  Serial.print(F("Waiting for NTP time sync: "));
-  time_t nowSecs = time(nullptr);
-  while (nowSecs < 8 * 3600 * 2) {
-    delay(500);
-    Serial.print(F("."));
-    yield();
-    nowSecs = time(nullptr);
-  }
-
-  Serial.println();
-  struct tm timeinfo;
-  gmtime_r(&nowSecs, &timeinfo);
-  Serial.print(F("Current time: "));
-  Serial.print(asctime(&timeinfo));
-}
 
 void setup() {
   pinMode(16, OUTPUT);
@@ -69,39 +50,40 @@ void loop() {
   }
 
   if (status == WL_CONNECTED) {
-    setClock();
+    service.pause();
 
-    WiFiClient client;
-    HTTPClient http;
-    String encoded = base64::encode(String(FUNCTION_USERNAME) + ":" + FUNCTION_PASSWORD);
+    WiFiClientSecure client;
 
+    client.setTimeout(20000);
+    client.setInsecure();
 
-    if (!client.connect("europe-west3-apps-353612.cloudfunctions.net", 443)) {
-      Serial.println("Connection failed");
-    } else {
+    int conn = client.connect("europe-west3-apps-353612.cloudfunctions.net", 443);
+
+    if (conn == 1) {
       client.println("GET /coffee HTTP/1.1");
-      client.println("Host: europe-west3-apps-353612.cloudfunctions.net");
-      client.println("Connection: close");
-      client.println(String("Authorization: ") + String("Basic ") + encoded);
+      client.print("Host: europe-west3-apps-353612.cloudfunctions.net");
+      client.println("Connection: Close");
+      client.print("Authorization: Basic ");
+      client.println(base64::encode(FUNCTION_AUTH_HEADER));
+
       client.println();
 
+      //Wait for server response
+      while (client.available() == 0)
+        ;
 
-      while (client.connected()) {
-        String line = client.readStringUntil('\n');
-        if (line == "\r") {
-          Serial.println("headers received");
-          break;
-        }
-      }
-      // if there are incoming bytes available
-      // from the server, read them and print them:
+      //Print Server Response
       while (client.available()) {
         char c = client.read();
         Serial.write(c);
       }
-
+    } else {
       client.stop();
+      Serial.println("Connection Failed");
     }
+
+
+    service.resume();
   }
 
   delay(2000);
