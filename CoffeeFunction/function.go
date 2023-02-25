@@ -55,6 +55,6 @@ func Coffee(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprint(w, "Hello, World!")
+	fmt.Fprint(w, "Hello, World!\n")
 	return
 }
