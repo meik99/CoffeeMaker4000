@@ -9,7 +9,7 @@ steps:
       - '--runtime=go118'
       - '--entry-point=Coffee'
       - '--region=europe-west3'
-      - '--project=apps-353612 '
+      - '--project=apps-353612'
       - '--source=CoffeeFunction/.'
       - '--allow-unauthenticated'
       - '--set-env-vars COFFEE_USER=${_COFFEE_USER},COFFEE_PASSWORD=${_COFFEE_PASSWORD}'
