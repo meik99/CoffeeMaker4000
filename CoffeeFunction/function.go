@@ -19,12 +19,16 @@ func init() {
 
 // helloHTTP is an HTTP Cloud Function with a request parameter.
 func Coffee(w http.ResponseWriter, r *http.Request) {
-	authorizationHeader := r.Header.Get("Authorization")
+	authorizationHeader := r.Header.Get("authorization")
 
 	if authorizationHeader == "" {
-		fmt.Fprint(w, "Unauthorized\n")
-		w.WriteHeader(http.StatusUnauthorized)
-		return
+		authorizationHeader = r.Header.Get("Authorization")
+
+		if authorizationHeader == "" {
+			fmt.Fprint(w, "Unauthorized\n")
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
 	}
 
 	headerParts := strings.Split(authorizationHeader, " ")
