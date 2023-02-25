@@ -1,6 +1,7 @@
 package coffee
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"os"
@@ -21,7 +22,7 @@ func Coffee(w http.ResponseWriter, r *http.Request) {
 	authorizationHeader := r.Header.Get("Authorization")
 
 	if authorizationHeader == "" {
-		fmt.Fprint(w, "Unauthorized")
+		fmt.Fprint(w, "Unauthorized\n")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -29,15 +30,23 @@ func Coffee(w http.ResponseWriter, r *http.Request) {
 	headerParts := strings.Split(authorizationHeader, " ")
 
 	if len(headerParts) != 2 || headerParts[0] != "Basic" {
-		fmt.Fprint(w, "Unauthorized")
+		fmt.Fprint(w, "Unauthorized\n")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
-	credentials := strings.Split(headerParts[1], ":")
+	decoded, err := base64.StdEncoding.DecodeString(headerParts[1])
+
+	if err != nil {
+		fmt.Fprintf(w, "Unauthorized %s\n", err.Error())
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	credentials := strings.Split(string(decoded), ":")
 
 	if len(credentials) != 2 || credentials[0] != username || credentials[1] != password {
-		fmt.Fprint(w, "Unauthorized")
+		fmt.Fprint(w, "Unauthorized\n")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}

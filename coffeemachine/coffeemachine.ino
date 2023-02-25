@@ -2,7 +2,6 @@
 #include <HTTPClient.h>
 
 #include "bluetooth.h"
-#include "jwt.h"
 
 BluetoothService service;
 
@@ -48,13 +47,9 @@ void loop() {
   if (status == WL_CONNECTED) {
     WiFiClient client;
     HTTPClient http;
-    Jwt jwt;
-    
-    String token = jwt.getJwt();
 
     http.begin(client, "https://europe-west3-apps-353612.cloudfunctions.net/coffee");
-    http.addHeader("Authorization", "Bearer " + token);
-    Serial.println("Bearer " + token);
+    http.addHeader("Authorization", String("Basic") + FUNCTION_USERNAME + ":" + FUNCTION_PASSWORD);
     int httpResponseCode = http.GET();
 
     if (httpResponseCode>0) {
