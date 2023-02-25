@@ -1,3 +1,10 @@
 ESP32/credentials.h
+ESP32/service-account.json
+ESP32/data/service-account.json
 CoffeeFunction/credentials.go
 **/.idea
+/coffeemachine/data/service-account.json
+/coffeemachine/esp32.svd
+/coffeemachine/debug_custom.json
+/coffeemachine/debug.cfg
+/coffeemachine/credentials.h
