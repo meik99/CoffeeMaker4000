@@ -50,40 +50,24 @@ void loop() {
   }
 
   if (status == WL_CONNECTED) {
-    service.pause();
 
     WiFiClientSecure client;
-
+    HTTPClient http;
+    
     client.setTimeout(20000);
     client.setInsecure();
 
-    int conn = client.connect("europe-west3-apps-353612.cloudfunctions.net", 443);
+    http.begin(client, "https://europe-west3-apps-353612.cloudfunctions.net/coffee");
+    http.addHeader("Authorization", String("Basic ") + base64::encode(FUNCTION_AUTH_HEADER));
 
-    if (conn == 1) {
-      client.println("GET /coffee HTTP/1.1");
-      client.print("Host: europe-west3-apps-353612.cloudfunctions.net");
-      client.println("Connection: Close");
-      client.print("Authorization: Basic ");
-      client.println(base64::encode(FUNCTION_AUTH_HEADER));
+    int httpResponseCode = http.GET();
 
-      client.println();
-
-      //Wait for server response
-      while (client.available() == 0)
-        ;
-
-      //Print Server Response
-      while (client.available()) {
-        char c = client.read();
-        Serial.write(c);
-      }
+    if (httpResponseCode < 0) {
+      Serial.println(http.errorToString(httpResponseCode));
     } else {
-      client.stop();
-      Serial.println("Connection Failed");
+      Serial.println(http.getString());
     }
 
-
-    service.resume();
   }
 
   delay(2000);
