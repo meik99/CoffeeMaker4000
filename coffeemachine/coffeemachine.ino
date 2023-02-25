@@ -1,32 +1,10 @@
 #include <WiFi.h>
-
-#include "SPIFFS.h"
+#include <HTTPClient.h>
 
 #include "bluetooth.h"
 #include "jwt.h"
 
 BluetoothService service;
-
-void printFilesystem() {  
-  File root = SPIFFS.open("/");
-
-  if (!root) {
-    Serial.println("error opening root filesystem");
-  } else {
-    File file = root.openNextFile();
-
-    if (!file) {
-      Serial.println("No files found");
-    }
-
-    while (file) {
-      Serial.print("FILE: ");
-      Serial.println(file.name());
-
-      file = root.openNextFile();
-    }
-  }
-}
 
 void setup() {
   pinMode(16, OUTPUT);
@@ -38,17 +16,6 @@ void setup() {
   service.init();
 
   Serial.println("Bluetooth service initialised");
-
-  if (!SPIFFS.begin(true)) {
-    Serial.println("An Error has occurred while mounting SPIFFS");
-    return;
-  }
-
-  printFilesystem();
-
-  Jwt jwt;
-
-  jwt.getJwt();
 }
 
 void loop() {
@@ -69,7 +36,6 @@ void loop() {
   }
 
   if (wifiCommand == WIFI_CONNECT) {
-
     if (status == WL_CONNECTED) {
       WiFi.disconnect();
     }
@@ -79,5 +45,32 @@ void loop() {
     service.setWifiIdle();
   }
 
-  delay(500);
+  if (status == WL_CONNECTED) {
+    WiFiClient client;
+    HTTPClient http;
+    Jwt jwt;
+    
+    String token = jwt.getJwt();
+
+    http.begin(client, "https://europe-west3-apps-353612.cloudfunctions.net/coffee");
+    http.addHeader("Authorization", "Bearer " + token);
+    Serial.println("Bearer " + token);
+    int httpResponseCode = http.GET();
+
+    if (httpResponseCode>0) {
+      Serial.print("HTTP Response code: ");
+      Serial.println(httpResponseCode);
+      String payload = http.getString();
+      Serial.println(payload);
+      delay(60000);
+    }
+    else {
+      Serial.print("Error code: ");
+      Serial.println(httpResponseCode);
+    }
+
+    http.end();
+  }
+
+  delay(2000);
 }

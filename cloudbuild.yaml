@@ -12,6 +12,7 @@ steps:
       - '--project=apps-353612'
       - '--source=CoffeeFunction/.'
       - '--set-env-vars=COFFEE_USER=${_COFFEE_USER},COFFEE_PASSWORD=${_COFFEE_PASSWORD}'
+      - '--allow-unauthenticated'
 
 options:
   logging: CLOUD_LOGGING_ONLY
