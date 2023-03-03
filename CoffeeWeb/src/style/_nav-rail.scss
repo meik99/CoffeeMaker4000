@@ -7,6 +7,8 @@
 
   float: left;
   position: sticky;
+
+  background: map-get($primary-palette, 100);
 }
 
 .nav-link {
@@ -23,7 +25,7 @@
   height: 32px;
   font-size: 18px;
 
-  background: map-get($primary-palette, 50);
+  background: map-get($primary-palette, 100);
 
   border: none;
   border-radius: 20px;
@@ -33,11 +35,11 @@
 }
 
 .nav-link > .active {
-  background: map-get($primary-palette, 200);
+  background: map-get($primary-palette, 300);
 }
 
 .nav-link > .nav-link-button:hover {
-  background: map-get($primary-palette, 100);
+  background: map-get($primary-palette, 200);
 }
 
 .nav-link > .nav-link-button:active{
