@@ -1,0 +1,64 @@
+@import "colour";
+
+.nav-rail {
+  width: 80px;
+  height: 100vh;
+  min-height: 100%;
+
+  float: left;
+  position: sticky;
+}
+
+.nav-link {
+  padding: 0 12px 0 12px;
+  margin-top: 12px;
+  width: 80px;
+  height: 56px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.nav-link > .nav-link-button {
+  width: 56px;
+  height: 32px;
+  font-size: 18px;
+
+  background: map-get($primary-palette, 50);
+
+  border: none;
+  border-radius: 20px;
+
+  margin-bottom: 4px;
+  transition: 0.2s;
+}
+
+.nav-link > .active {
+  background: map-get($primary-palette, 200);
+}
+
+.nav-link > .nav-link-button:hover {
+  background: map-get($primary-palette, 100);
+}
+
+.nav-link > .nav-link-button:active{
+  font-size: 14px;
+  transition: 0.2s;
+}
+//
+//.navbar > .navbar-menu {
+//  width: 100px;
+//  height: 100%;
+//
+//  position: absolute;
+//
+//  border: 1px solid green;
+//}
+//
+//.navbar > .navbar-submenu {
+//  width: 360px;
+//  height: 100%;
+//
+//  border: 1px solid yellow;
+//
+//  position: absolute;
+//}

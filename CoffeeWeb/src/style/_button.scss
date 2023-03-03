@@ -1,0 +1,27 @@
+@import "colour";
+
+.button {
+  height: 40px;
+  padding: 0 40px 0 40px;
+  border-radius: 20px;
+  box-shadow: none;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.button-filled {
+  background: map-get($primary-palette, 500);
+  color: #fefefe;
+  transition: 0.1s;
+}
+
+.button-filled:hover {
+  background: map-get($primary-palette, 300);
+  transition: 0.1s;
+}
+
+.button-filled:active {
+  background: map-get($primary-palette, 400);
+  transition: 0.1s;
+}

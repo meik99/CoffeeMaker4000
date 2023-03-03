@@ -1,0 +1,106 @@
+// Put in whatever color here, the generator will use it as the 500 value of the palette!
+$primary-colour: #b5883f;
+$accent-colour: #3fb588;
+
+@function tetrad($color) {
+  $hue: hue($color);
+  $saturation: saturation($color);
+  $lightness: lightness($color);
+  $tetrad: [ hsl($hue, $saturation, $lightness),
+    hsl($hue + 90 % 360, $saturation, $lightness),
+    hsl($hue + 180 % 360, $saturation, $lightness),
+    hsl($hue + 270 % 360, $saturation, $lightness), ];
+  @return $tetrad;
+}
+@function multiply ($fore, $back) {
+  $red: calc(red($back) * red($fore) / 255);
+  $green: calc(green($back) * green($fore) / 255);
+  $blue: calc(blue($back) * blue($fore) / 255);
+  @return rgb($red, $green, $blue);
+}
+@function makeColorPalette($color) {
+  $light: #fff;
+  $dark: multiply($color, $color);
+  $tetrad: tetrad($color);
+  $palette: (
+    50: mix($light, $color, 88%),
+    100: mix($light, $color, 70%),
+    200: mix($light, $color, 50%),
+    300: mix($light, $color, 30%),
+    400: mix($light, $color, 15%),
+    500: mix($light, $color, 0%),
+    600: mix($dark, $color, 13%),
+    700: mix($dark, $color, 30%),
+    800: mix($dark, $color, 46%),
+    900: mix($dark, $color, 75%),
+    A100: lighten(saturate(mix($dark, $color, 15%), 80%), 45.6%),
+    A200: lighten(saturate(mix($dark, $color, 15%), 80%), 35.6%),
+    A400: lighten(saturate(mix($dark, $color, 15%), 100%), 25.6%),
+    A700: lighten(saturate(mix($dark, $color, 15%), 100%), 20.5%)
+  );
+  @return $palette;
+}
+
+@each $shade, $color in makeColorPalette($primary-colour) {
+  .primary-#{$shade} {
+    background-color: $color;
+    animation-name: primary#{$shade};
+  }
+  @keyframes primary#{$shade} {
+    0% {
+      background: $primary-colour;
+    }
+    100% {
+      background: $color;
+    }
+  }
+}
+
+.palette {
+  display: grid;
+  writing-mode: vertical-lr;
+  grid-template-rows: repeat(14, 1fr);
+  width: 100vw;
+  div {
+    display: inline-block;
+    border: none;
+    box-sizing: border-box;
+    height: 100vh;
+    padding: 1vw;
+    overflow: hidden;
+    animation-duration: 1s;
+    animation-delay: .5s;
+    background: $primary-colour;
+    animation-fill-mode: forwards;
+    font-size: 2vw;
+    font-family: Inconsolata, monospace;
+    @for $i from 1 to 15 {
+      &:nth-child(#{$i}) {
+        animation-delay: $i * 0.05s;
+      }
+    }
+    &:before, &:after {
+      opacity: 0;
+      animation: fadeIn 1s .5s ease forwards;
+    }
+    &:before {
+      content: attr(class);
+    }
+    &:after {
+      float: right;
+    }
+  }
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+$primary-palette: makeColorPalette($primary-colour);
+$accent-palette: makeColorPalette($accent-colour);
+// TODO: Label text should know if it should be black or white based on the background color darkness.
+// TODO: Lighter colors (#bee4e1) can return white values for A-level tints. Should be slightly smarter than this.
